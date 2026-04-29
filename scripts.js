@@ -105,6 +105,12 @@ map.on('click', 'community-districts-fill', (e) => {
     // Update the Map Highlight
     map.setFilter('community-districts-highlight', ['==', ['get', 'boro_cd'], clickedDistrict]);
 
+    map.flyTo({
+        center: e.lngLat, 
+        zoom: 12,        // Adjust this number for a tighter or looser zoom
+        essential: true  // This ensures the animation happens even if the user has 'reduced motion' enabled
+    });
+
     const sidebar = document.getElementById('sidebar');
     const sidebarContent = document.getElementById('sidebar-content');
     
@@ -150,7 +156,12 @@ if (closeBtn) {
         // 2. Hide the sidebar
         const sidebar = document.getElementById('sidebar');
         sidebar.classList.add('hidden');
-        
+        // Zoom back out to the full NYC view
+    map.flyTo({
+        center: [-74.006, 40.7128], // Original center
+        zoom: 10,                   // Original zoom
+        essential: true
+    });
         // 3. Clear the white map highlight
         map.setFilter('community-districts-highlight', ['==', ['get', 'boro_cd'], '']);
     });
