@@ -7,6 +7,11 @@ const map = new mapboxgl.Map({
     zoom: 10
 })
 
+const popup = new mapboxgl.Popup({
+    closeButton: false,
+    closeOnClick: false
+});
+
 let centerData = null;
 
 // 1. Fetch the center data
@@ -82,6 +87,37 @@ map.on('load', () => {
         }
     });
 
+// --- HOVER POPUP FOR CENTERS ---
+const popup = new mapboxgl.Popup({
+    closeButton: false,
+    closeOnClick: false
+});
+
+map.on('mouseenter', 'centers-fill', (e) => {
+    map.getCanvas().style.cursor = 'pointer';
+
+    const coordinates = e.lngLat;
+    const props = e.features[0].properties;
+    
+    // Pull the name and the "sidebar" style address (Address_2)
+    const centerName = props.Center || 'Unknown Center';
+    const fullAddress = props.Address_2 || 'Address not available';
+
+    popup.setLngLat(coordinates)
+        .setHTML(`
+            <div style="text-align: center; font-family: sans-serif;">
+                <h3 style="margin: 0 0 4px 0; font-size: 14px;">${centerName}</h3>
+                <p style="margin: 0; font-size: 12px; font-weight: normal; color: #666;">${fullAddress}</p>
+            </div>
+        `)
+        .addTo(map);
+});
+
+map.on('mouseleave', 'centers-fill', () => {
+    map.getCanvas().style.cursor = '';
+    popup.remove();
+});
+
     map.addSource('centers-points', {
         type: 'geojson',
         data: 'CFC_ACTIVE_points.geojson'
@@ -101,19 +137,22 @@ map.on('load', () => {
 // --- THE FIXED CLICK EVENT ---
 map.on('click', 'community-districts-fill', (e) => {
     const clickedDistrict = e.features[0].properties.boro_cd;
-    
+
     // Update the Map Highlight
     map.setFilter('community-districts-highlight', ['==', ['get', 'boro_cd'], clickedDistrict]);
 
     map.flyTo({
-        center: e.lngLat, 
+        center: e.lngLat,
         zoom: 12,        // Adjust this number for a tighter or looser zoom
         essential: true  // This ensures the animation happens even if the user has 'reduced motion' enabled
     });
 
+    // Hide the title card when a district is clicked
+    document.getElementById('title-card').classList.add('hidden');
+
     const sidebar = document.getElementById('sidebar');
     const sidebarContent = document.getElementById('sidebar-content');
-    
+
     // Show the sidebar
     sidebar.classList.remove('hidden');
 
@@ -124,7 +163,7 @@ map.on('click', 'community-districts-fill', (e) => {
 
         if (filteredCenters.length > 0) {
             let html = `<h2>Community Food Connection Centers in District ${clickedDistrict}</h2>`;
-            
+
             filteredCenters.forEach(center => {
                 const props = center.properties;
                 html += `
@@ -151,17 +190,19 @@ const closeBtn = document.getElementById('close-sidebar');
 if (closeBtn) {
     closeBtn.addEventListener('click', (e) => {
         // 1. Stop the click from "falling through" to the map
-        e.stopPropagation(); 
-        
+        e.stopPropagation();
+
         // 2. Hide the sidebar
         const sidebar = document.getElementById('sidebar');
         sidebar.classList.add('hidden');
+        // Show the title card again
+    document.getElementById('title-card').classList.remove('hidden');
         // Zoom back out to the full NYC view
-    map.flyTo({
-        center: [-74.006, 40.7128], // Original center
-        zoom: 10,                   // Original zoom
-        essential: true
-    });
+        map.flyTo({
+            center: [-74.006, 40.7128], // Original center
+            zoom: 10,                   // Original zoom
+            essential: true
+        });
         // 3. Clear the white map highlight
         map.setFilter('community-districts-highlight', ['==', ['get', 'boro_cd'], '']);
     });

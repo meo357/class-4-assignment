@@ -82,9 +82,21 @@ body, html {
   width: 380px;
   padding: 25px;
   z-index: 1;
+  transition: opacity 0.3s ease, visibility 0.3s;
+    opacity: 1;
+    visibility: visible;
+}
+
+.info-card.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none; /* Prevents users from accidentally clicking an invisible card */
 }
 
 .info-card h1 {
+  font-size: 20px;       /* Smaller size (adjust as needed) */
+    margin-bottom: 8px;    /* Reduces space between header and description */
+    line-height: 1.2;      /* Keeps the text compact if it wraps to two lines */
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
   color: #000;
 }
@@ -100,6 +112,26 @@ body, html {
   padding-top: 15px;
   color: #4b0082; 
   font-weight: 600;
+}
+.usage-hints {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05); /* Very faint line to separate from text */
+    font-size: 12px;
+    color: #666; /* Muted gray so it doesn't distract */
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    font-style: italic;
+}
+
+.usage-hints .separator {
+    color: #ccc;
+}
+
+/* Ensure your info-card doesn't get too tall */
+.info-card {
+    max-width: 300px;
 }
 
 /* Sidebar Styling */
@@ -170,4 +202,12 @@ body, html {
 
 .center-entry strong {
     color: #000;
+}
+
+.mapboxgl-popup-content {
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    pointer-events: none; /* This prevents the popup from flickering if the mouse hits it */
 }
