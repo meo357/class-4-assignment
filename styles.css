@@ -102,46 +102,53 @@ body, html {
   font-weight: 600;
 }
 
+/* Sidebar Styling */
 .sidebar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 300px;
-  height: 100%;
-  background-color: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-right: 1px solid rgba(255, 255, 255, 0.2);
-  z-index: 2; /* Ensures it stays above the title card if they overlap */
-  padding: 20px;
-  padding-top: 250px; /* Offset so it doesn't cover your title card */
-  overflow-y: auto;
-  transition: transform 0.3s ease;
-}
-
-#center-list {
-  list-style: none;
-  padding: 0;
-}
-
-#center-list li {
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  font-size: 14px;
-  color: #1a1a1a;
-}
-
-#sidebar-content {
-    max-height: 80vh; /* Keeps the content within the screen height */
+    position: absolute;
+    top: 0;
+    right: 0; /* Positioned on the right, or left if you prefer */
+    width: 350px;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.4); /* Matches your "ghostly" look */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
+    z-index: 2;
     overflow-y: auto;
-    padding-right: 10px;
+    padding: 20px;
+    box-sizing: border-box;
+    font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif;
 }
 
-/* Custom scrollbar to keep it "ghostly" */
-#sidebar-content::-webkit-scrollbar {
-    width: 6px;
+#sidebar h2 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    color: #000;
+    border-bottom: 2px solid #4b0082; /* Lavender accent from your CTA style */
+    padding-bottom: 10px;
 }
-#sidebar-content::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
+
+.center-entry {
+    background: rgba(255, 255, 255, 0.5);
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.center-entry h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.1rem;
+    color: #074580; /* Blue from your border style */
+}
+
+.center-entry p {
+    margin: 4px 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: #444;
+}
+
+.center-entry strong {
+    color: #000;
 }

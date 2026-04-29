@@ -87,3 +87,54 @@ map.on('load', () => {
         }
     });
 });
+
+
+map.on('click', 'community-districts-fill', (e) => {
+    // 1. Get the boro_cd of the clicked district
+    const clickedDistrict = e.features[0].properties.boro_cd;
+    
+    // 2. Query all features from the food centers source
+    // Note: boro_cd is often a string ("103"), while CD might be a number (103)
+    const allCenters = map.querySourceFeatures('centers-polygons');
+    
+    // 3. Filter centers where CD matches the clicked district ID
+    const filteredCenters = allCenters.filter(feature => {
+        return feature.properties.CD == clickedDistrict;
+    });
+
+    const sidebarContent = document.getElementById('sidebar-content');
+
+    if (filteredCenters.length > 0) {
+        // 4. Create the HTML for the sidebar
+        let html = `<h2>Community Food Connection Centers in Community District ${clickedDistrict}</h2>`;
+        
+        filteredCenters.forEach(center => {
+            const props = center.properties;
+            html += `
+                <div class="center-entry">
+                    <h3>${props.Center || 'Unknown Center'}</h3>
+                    <p><strong>Address:</strong> ${props.Address_2 || 'N/A'}</p>
+                    <p><strong>Phone:</strong> ${props.Phone || 'N/A'}</p>
+                    <p><strong>Days:</strong> ${props.Days || 'N/A'}</p>
+                    <p><strong>Hours:</strong> ${props.Hours || 'N/A'}</p>
+                </div>
+            `;
+        });
+        
+        sidebarContent.innerHTML = html;
+    } else {
+        sidebarContent.innerHTML = `
+            <h2>Community Food Connection Centers in Community District ${clickedDistrict}</h2>
+            <p>No Community Food Connection centers found in this district.</p>
+        `;
+    }
+});
+
+// Change cursor to pointer when hovering over districts
+map.on('mouseenter', 'community-districts-fill', () => {
+    map.getCanvas().style.cursor = 'pointer';
+});
+
+map.on('mouseleave', 'community-districts-fill', () => {
+    map.getCanvas().style.cursor = '';
+});
