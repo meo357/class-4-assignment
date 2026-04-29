@@ -1,15 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Mapbox GL GS Fullscreen Map</title>
-        <link href="https://api.mapbox.com/mapbox-gl-js/v3.20.0/mapbox-gl.js" rel="stylesheet">
-        <link rel="stylesheet" href="styles.css">
-    </head>
-    <body>
-        <div id="map"></div>
-        <script src="https://api.mapbox.com/mapbox-gl-js/v3.20.0/mapbox-gl.js"></script>
-        <script src="scripts.js"></script>
-    </body>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYC Community Food Connection Centers</title>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.20.0/mapbox-gl.js" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div id="map"></div>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.20.0/mapbox-gl.js"></script>
+    <script src="scripts.js"></script>
+    <div id="state-legend" class="legend">
+        <h4>Boroughs</h4>
+        <div><span style="background-color: #863e3e"></span>Bronx</div>
+        <div><span style="background-color: #73e8c7"></span>Brooklyn</div>
+        <div><span style="background-color: #8c56e2"></span>Manhattan</div>
+        <div><span style="background-color: #44aae1"></span>Queens</div>
+        <div><span style="background-color: #7d7e52"></span>Staten Island</div>
+    </div>
+    <div id="title-card" class="info-card">
+        <h1>NYC Community Food Connection Centers</h1>
+        <p>New York City’s Department of Social Services distributes funding to over 700 community kitchens and food
+            pantries citywide under their Community Food Connection (CFC) program. Ranging from churches to formal food
+            distribution sites, these locations are the primary distribution centers for emergency food assistance.</p>
+        <p class="cta">Explore CFC centers in your community district</p>
+    </div>
+</body>
+
 </html>

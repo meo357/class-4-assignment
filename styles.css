@@ -11,3 +11,93 @@ body, html {
     width: 100%;
     height: 100%;
 }
+
+.legend {
+  background-color: #fff;
+  border-radius: 3px;
+  bottom: 30px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  padding: 10px;
+  position: absolute;
+  right: 10px;
+  z-index: 1;
+}
+
+.legend h4 {
+  margin: 0 0 10px;
+}
+
+.legend div span {
+  border-radius: 50%;
+  display: inline-block;
+  height: 10px;
+  margin-right: 5px;
+  width: 10px;
+}
+
+/* Shared styles for both overlays */
+.legend, .info-card {
+  /* Lower alpha (0.4) for a ghostly, translucent look */
+  background-color: rgba(255, 255, 255, 0.4); 
+  
+  /* Increased blur makes the map underneath feel like a dream */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  
+  /* A semi-transparent white border gives it a "glass edge" */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  
+  /* Softening the shadow to keep it light and airy */
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+  
+  border-radius: 15px;
+  color: #1a1a1a;
+  z-index: 1;
+}
+
+/* Legend Specifics */
+.legend {
+  bottom: 30px;
+  right: 20px;
+  padding: 15px;
+  position: absolute;
+  z-index: 1;
+  min-width: 120px;
+}
+
+.legend h4 {
+  margin: 0 0 10px;
+  font-size: 14px;
+  color: #2c3e50;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}
+
+/* Info Card Specifics */
+.info-card {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 380px;
+  padding: 25px;
+  z-index: 1;
+}
+
+.info-card h1 {
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  color: #000;
+}
+
+.info-card p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #444;
+}
+
+.info-card .cta {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding-top: 15px;
+  color: #4b0082; 
+  font-weight: 600;
+}
