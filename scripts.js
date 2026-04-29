@@ -7,13 +7,24 @@ const map = new mapboxgl.Map({
     zoom: 10
 })
 
+// We'll store the center data here so the click listener can always find it
+let centerData = null;
+
+// 1. Fetch the center data immediately
+fetch('./Joined_Center_Building.geojson')
+    .then(response => response.json())
+    .then(data => {
+        centerData = data;
+    });
+
 map.on('load', () => {
-    // 1. Add the community district source and layers
+    // Community Districts Source
     map.addSource('community-districts', {
         type: 'geojson',
         data: './simplified-community-districts.json'
     });
 
+    // Fill Layer
     map.addLayer({
         id: 'community-districts-fill',
         type: 'fill',
@@ -33,6 +44,24 @@ map.on('load', () => {
         }
     });
 
+    // Thick White Border Layer (Starts invisible)
+    map.addLayer({
+        id: 'community-districts-highlight',
+        type: 'line',
+        source: 'community-districts',
+        layout: {
+        // This makes the individual dashes rounded at the ends
+        'line-cap': 'round',
+        'line-join': 'round'
+    },
+        paint: {
+            'line-color': 'white',
+            'line-width': 8
+        },
+        filter: ['==', ['get', 'boro_cd'], '']
+    });
+
+    // Standard Border Layer
     map.addLayer({
         id: 'community-districts-border',
         type: 'line',
@@ -44,7 +73,7 @@ map.on('load', () => {
         }
     });
 
-    // 2. Add the polygon source and layers for center fills/outlines
+    // Centers Polygons
     map.addSource('centers-polygons', {
         type: 'geojson',
         data: 'Joined_Center_Building.geojson'
@@ -60,18 +89,7 @@ map.on('load', () => {
         }
     });
 
-    map.addLayer({
-        id: 'centers-outline',
-        type: 'line',
-        source: 'centers-polygons',
-        paint: {
-            'line-color': 'yellow',
-            'line-width': 2,
-            'line-opacity': 1
-        }
-    });
-
-    // 3. Add the points source and circle layer for center markers
+    // Centers Points
     map.addSource('centers-points', {
         type: 'geojson',
         data: 'CFC_ACTIVE_points.geojson'
@@ -88,53 +106,42 @@ map.on('load', () => {
     });
 });
 
-
 map.on('click', 'community-districts-fill', (e) => {
-    // 1. Get the boro_cd of the clicked district
     const clickedDistrict = e.features[0].properties.boro_cd;
     
-    // 2. Query all features from the food centers source
-    // Note: boro_cd is often a string ("103"), while CD might be a number (103)
-    const allCenters = map.querySourceFeatures('centers-polygons');
-    
-    // 3. Filter centers where CD matches the clicked district ID
-    const filteredCenters = allCenters.filter(feature => {
-        return feature.properties.CD == clickedDistrict;
-    });
+    // Update the White Border
+    map.setFilter('community-districts-highlight', ['==', ['get', 'boro_cd'], clickedDistrict]);
 
     const sidebarContent = document.getElementById('sidebar-content');
 
-    if (filteredCenters.length > 0) {
-        // 4. Create the HTML for the sidebar
-        let html = `<h2>Community Food Connection Centers in Community District ${clickedDistrict}</h2>`;
-        
-        filteredCenters.forEach(center => {
-            const props = center.properties;
-            html += `
-                <div class="center-entry">
-                    <h3>${props.Center || 'Unknown Center'}</h3>
-                    <p><strong>Address:</strong> ${props.Address_2 || 'N/A'}</p>
-                    <p><strong>Phone:</strong> ${props.Phone || 'N/A'}</p>
-                    <p><strong>Days:</strong> ${props.Days || 'N/A'}</p>
-                    <p><strong>Hours:</strong> ${props.Hours || 'N/A'}</p>
-                </div>
-            `;
+    // Filter centers using the pre-loaded centerData
+    if (centerData) {
+        const filteredCenters = centerData.features.filter(feature => {
+            // Ensure comparison works whether CD is a string or number
+            return String(feature.properties.CD) === String(clickedDistrict);
         });
-        
-        sidebarContent.innerHTML = html;
-    } else {
-        sidebarContent.innerHTML = `
-            <h2>Community Food Connection Centers in Community District ${clickedDistrict}</h2>
-            <p>No Community Food Connection centers found in this district.</p>
-        `;
+
+        if (filteredCenters.length > 0) {
+            let html = `<h2>Community Food Connection Centers in District ${clickedDistrict}</h2>`;
+            
+            filteredCenters.forEach(center => {
+                const props = center.properties;
+                html += `
+                    <div class="center-entry" style="border-bottom: 5px solid #ccc; padding: 10px 0;">
+                        <h3>${props.Center || 'Unknown Center'}</h3>
+                        <p><strong>Address:</strong> ${props.Address_2 || 'N/A'}</p>
+                        <p><strong>Phone:</strong> ${props.Phone || 'N/A'}</p>
+                        <p><strong>Days:</strong> ${props.Days || 'N/A'}</p>
+                        <p><strong>Hours:</strong> ${props.Hours || 'N/A'}</p>
+                    </div>
+                `;
+            });
+            sidebarContent.innerHTML = html;
+        } else {
+            sidebarContent.innerHTML = `<h2>District ${clickedDistrict}</h2><p>No centers found in this district.</p>`;
+        }
     }
 });
 
-// Change cursor to pointer when hovering over districts
-map.on('mouseenter', 'community-districts-fill', () => {
-    map.getCanvas().style.cursor = 'pointer';
-});
-
-map.on('mouseleave', 'community-districts-fill', () => {
-    map.getCanvas().style.cursor = '';
-});
+map.on('mouseenter', 'community-districts-fill', () => { map.getCanvas().style.cursor = 'pointer'; });
+map.on('mouseleave', 'community-districts-fill', () => { map.getCanvas().style.cursor = ''; });
