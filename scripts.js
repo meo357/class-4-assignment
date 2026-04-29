@@ -4,64 +4,86 @@ const map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/standard',
     center: [-74.006, 40.7128],
-    zoom:10
+    zoom: 10
 })
 
-
 map.on('load', () => {
-    // 1. Add the data source
+    // 1. Add the community district source and layers
     map.addSource('community-districts', {
         type: 'geojson',
         data: './simplified-community-districts.json'
     });
 
-    // 2. Add the visual layer
-map.addLayer({
-    'id': 'community-districts-fill',
-    'type': 'fill',
-    'source': 'community-districts',
-    'slot': 'middle',
-    'paint': {
-        'fill-color': [
-            'match',
-            ['slice', ['get', 'boro_cd'], 0, 1],
-            '1', '#8c56e2', // Deep Slate (Manhattan) - Neutral anchor
-            '2', '#863e3e', // Muted Crimson (Bronx) - Warm but dark
-            '3', '#73e8c7', // Deep Forest Green (Brooklyn) - Rich contrast for yellow
-            '4', '#44aae1', // Midnight Blue (Queens) - Perfect dark backdrop
-            '5', '#7d7e52', // Deep Royal Purple (Staten Island) - High "pop" contrast
-            '#1e293b'      // Dark default
-        ],
-        'fill-opacity': 0.3 // Slightly higher opacity to show the richer colors
-    }
-});
-    // 3. Addition of community district boundaries
     map.addLayer({
-    'id': 'community-districts-border',
-    'type': 'line',
-    'source': 'community-districts',
-    'slot': 'middle', // Keeps it organized with the fill layer
-    'paint': {
-        'line-color': '#074580', // Blue borders
-        'line-width': 1,         // Adjust thickness as needed
-        'line-opacity': 0.8
-    }
-});
-});
+        id: 'community-districts-fill',
+        type: 'fill',
+        source: 'community-districts',
+        paint: {
+            'fill-color': [
+                'match',
+                ['slice', ['get', 'boro_cd'], 0, 1],
+                '1', '#8c56e2',
+                '2', '#863e3e',
+                '3', '#73e8c7',
+                '4', '#44aae1',
+                '5', '#7d7e52',
+                '#1e293b'
+            ],
+            'fill-opacity': 0.3
+        }
+    });
 
-map.on('load', () => {
-    map.addSource('centers', {
+    map.addLayer({
+        id: 'community-districts-border',
+        type: 'line',
+        source: 'community-districts',
+        paint: {
+            'line-color': '#074580',
+            'line-width': 1,
+            'line-opacity': 0.8
+        }
+    });
+
+    // 2. Add the polygon source and layers for center fills/outlines
+    map.addSource('centers-polygons', {
         type: 'geojson',
-        data: 'CFC_ACTIVE_points.geojson' // Path to your file
+        data: 'Joined_Center_Building.geojson'
+    });
+
+    map.addLayer({
+        id: 'centers-fill',
+        type: 'fill',
+        source: 'centers-polygons',
+        paint: {
+            'fill-color': 'yellow',
+            'fill-opacity': 0.8
+        }
+    });
+
+    map.addLayer({
+        id: 'centers-outline',
+        type: 'line',
+        source: 'centers-polygons',
+        paint: {
+            'line-color': 'yellow',
+            'line-width': 2,
+            'line-opacity': 1
+        }
+    });
+
+    // 3. Add the points source and circle layer for center markers
+    map.addSource('centers-points', {
+        type: 'geojson',
+        data: 'CFC_ACTIVE_points.geojson'
     });
 
     map.addLayer({
         id: 'centers-layer',
         type: 'circle',
-        source: 'centers',
+        source: 'centers-points',
         paint: {
             'circle-radius': 2.5,
-            'circle-color': 'yellow' // Yellow color
+            'circle-color': 'yellow',
         }
     });
 });
