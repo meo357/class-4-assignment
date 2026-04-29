@@ -101,3 +101,47 @@ body, html {
   color: #4b0082; 
   font-weight: 600;
 }
+
+.sidebar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 2; /* Ensures it stays above the title card if they overlap */
+  padding: 20px;
+  padding-top: 250px; /* Offset so it doesn't cover your title card */
+  overflow-y: auto;
+  transition: transform 0.3s ease;
+}
+
+#center-list {
+  list-style: none;
+  padding: 0;
+}
+
+#center-list li {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  color: #1a1a1a;
+}
+
+#sidebar-content {
+    max-height: 80vh; /* Keeps the content within the screen height */
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* Custom scrollbar to keep it "ghostly" */
+#sidebar-content::-webkit-scrollbar {
+    width: 6px;
+}
+#sidebar-content::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
