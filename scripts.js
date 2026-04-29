@@ -87,36 +87,36 @@ map.on('load', () => {
         }
     });
 
-// --- HOVER POPUP FOR CENTERS ---
-const popup = new mapboxgl.Popup({
-    closeButton: false,
-    closeOnClick: false
-});
+    // --- HOVER POPUP FOR CENTERS ---
+    const popup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false
+    });
 
-map.on('mouseenter', 'centers-fill', (e) => {
-    map.getCanvas().style.cursor = 'pointer';
+    map.on('mouseenter', 'centers-fill', (e) => {
+        map.getCanvas().style.cursor = 'pointer';
 
-    const coordinates = e.lngLat;
-    const props = e.features[0].properties;
-    
-    // Pull the name and the "sidebar" style address (Address_2)
-    const centerName = props.Center || 'Unknown Center';
-    const fullAddress = props.Address_2 || 'Address not available';
+        const coordinates = e.lngLat;
+        const props = e.features[0].properties;
 
-    popup.setLngLat(coordinates)
-        .setHTML(`
+        // Pull the name and the "sidebar" style address (Address_2)
+        const centerName = props.Center || 'Unknown Center';
+        const fullAddress = props.Address_2 || 'Address not available';
+
+        popup.setLngLat(coordinates)
+            .setHTML(`
             <div style="text-align: center; font-family: sans-serif;">
                 <h3 style="margin: 0 0 4px 0; font-size: 14px;">${centerName}</h3>
                 <p style="margin: 0; font-size: 12px; font-weight: normal; color: #666;">${fullAddress}</p>
             </div>
         `)
-        .addTo(map);
-});
+            .addTo(map);
+    });
 
-map.on('mouseleave', 'centers-fill', () => {
-    map.getCanvas().style.cursor = '';
-    popup.remove();
-});
+    map.on('mouseleave', 'centers-fill', () => {
+        map.getCanvas().style.cursor = '';
+        popup.remove();
+    });
 
     map.addSource('centers-points', {
         type: 'geojson',
@@ -196,7 +196,7 @@ if (closeBtn) {
         const sidebar = document.getElementById('sidebar');
         sidebar.classList.add('hidden');
         // Show the title card again
-    document.getElementById('title-card').classList.remove('hidden');
+        document.getElementById('title-card').classList.remove('hidden');
         // Zoom back out to the full NYC view
         map.flyTo({
             center: [-74.006, 40.7128], // Original center
