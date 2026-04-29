@@ -7,10 +7,9 @@ const map = new mapboxgl.Map({
     zoom: 10
 })
 
-// We'll store the center data here so the click listener can always find it
 let centerData = null;
 
-// 1. Fetch the center data immediately
+// 1. Fetch the center data
 fetch('./Joined_Center_Building.geojson')
     .then(response => response.json())
     .then(data => {
@@ -18,13 +17,11 @@ fetch('./Joined_Center_Building.geojson')
     });
 
 map.on('load', () => {
-    // Community Districts Source
     map.addSource('community-districts', {
         type: 'geojson',
         data: './simplified-community-districts.json'
     });
 
-    // Fill Layer
     map.addLayer({
         id: 'community-districts-fill',
         type: 'fill',
@@ -44,16 +41,14 @@ map.on('load', () => {
         }
     });
 
-    // Thick White Border Layer (Starts invisible)
     map.addLayer({
         id: 'community-districts-highlight',
         type: 'line',
         source: 'community-districts',
         layout: {
-        // This makes the individual dashes rounded at the ends
-        'line-cap': 'round',
-        'line-join': 'round'
-    },
+            'line-cap': 'round',
+            'line-join': 'round'
+        },
         paint: {
             'line-color': 'white',
             'line-width': 8
@@ -61,7 +56,6 @@ map.on('load', () => {
         filter: ['==', ['get', 'boro_cd'], '']
     });
 
-    // Standard Border Layer
     map.addLayer({
         id: 'community-districts-border',
         type: 'line',
@@ -73,7 +67,6 @@ map.on('load', () => {
         }
     });
 
-    // Centers Polygons
     map.addSource('centers-polygons', {
         type: 'geojson',
         data: 'Joined_Center_Building.geojson'
@@ -89,7 +82,6 @@ map.on('load', () => {
         }
     });
 
-    // Centers Points
     map.addSource('centers-points', {
         type: 'geojson',
         data: 'CFC_ACTIVE_points.geojson'
@@ -106,18 +98,21 @@ map.on('load', () => {
     });
 });
 
+// --- THE FIXED CLICK EVENT ---
 map.on('click', 'community-districts-fill', (e) => {
     const clickedDistrict = e.features[0].properties.boro_cd;
     
-    // Update the White Border
+    // Update the Map Highlight
     map.setFilter('community-districts-highlight', ['==', ['get', 'boro_cd'], clickedDistrict]);
 
+    const sidebar = document.getElementById('sidebar');
     const sidebarContent = document.getElementById('sidebar-content');
+    
+    // Show the sidebar
+    sidebar.classList.remove('hidden');
 
-    // Filter centers using the pre-loaded centerData
     if (centerData) {
         const filteredCenters = centerData.features.filter(feature => {
-            // Ensure comparison works whether CD is a string or number
             return String(feature.properties.CD) === String(clickedDistrict);
         });
 
@@ -127,7 +122,7 @@ map.on('click', 'community-districts-fill', (e) => {
             filteredCenters.forEach(center => {
                 const props = center.properties;
                 html += `
-                    <div class="center-entry" style="border-bottom: 5px solid #ccc; padding: 10px 0;">
+                    <div class="center-entry" style="border-bottom: 2px solid #ccc; padding: 10px 0;">
                         <h3>${props.Center || 'Unknown Center'}</h3>
                         <p><strong>Address:</strong> ${props.Address_2 || 'N/A'}</p>
                         <p><strong>Phone:</strong> ${props.Phone || 'N/A'}</p>
@@ -143,5 +138,24 @@ map.on('click', 'community-districts-fill', (e) => {
     }
 });
 
+
+// --- SIDEBAR CLOSE LOGIC ---
+const closeBtn = document.getElementById('close-sidebar');
+
+if (closeBtn) {
+    closeBtn.addEventListener('click', (e) => {
+        // 1. Stop the click from "falling through" to the map
+        e.stopPropagation(); 
+        
+        // 2. Hide the sidebar
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.add('hidden');
+        
+        // 3. Clear the white map highlight
+        map.setFilter('community-districts-highlight', ['==', ['get', 'boro_cd'], '']);
+    });
+}
+
+// Hover effects
 map.on('mouseenter', 'community-districts-fill', () => { map.getCanvas().style.cursor = 'pointer'; });
 map.on('mouseleave', 'community-districts-fill', () => { map.getCanvas().style.cursor = ''; });

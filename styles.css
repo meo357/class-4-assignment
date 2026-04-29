@@ -104,20 +104,39 @@ body, html {
 
 /* Sidebar Styling */
 .sidebar {
-    position: absolute;
+    position: fixed;
+    right: 0;
     top: 0;
-    right: 0; /* Positioned on the right, or left if you prefer */
     width: 350px;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.4); /* Matches your "ghostly" look */
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-left: 1px solid rgba(255, 255, 255, 0.3);
-    z-index: 2;
-    overflow-y: auto;
+    background: white;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease-in-out;
+    z-index: 1000;
     padding: 20px;
-    box-sizing: border-box;
-    font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    overflow-y: auto;
+}
+
+/* Hide the sidebar by sliding it 100% to the right */
+.sidebar.hidden {
+    transform: translateX(100%);
+}
+
+/* Close button styling */
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    z-index: 1001;   /* Higher than the sidebar itself */
+    cursor: pointer; /* Makes it clear the button is clickable */
+    color: #333;
+}
+
+.close-btn:hover {
+    color: #863e3e; /* Matches one of your borough colors */
 }
 
 #sidebar h2 {

@@ -5,14 +5,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NYC Community Food Connection Centers</title>
-    <link href="https://api.mapbox.com/mapbox-gl-js/v3.20.0/mapbox-gl.js" rel="stylesheet">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.20.0/mapbox-gl.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
     <div id="map"></div>
-    <script src="https://api.mapbox.com/mapbox-gl-js/v3.20.0/mapbox-gl.js"></script>
-    <script src="scripts.js"></script>
+
     <div id="state-legend" class="legend">
         <h4>Boroughs</h4>
         <div><span style="background-color: #863e3e"></span>Bronx</div>
@@ -21,6 +20,7 @@
         <div><span style="background-color: #44aae1"></span>Queens</div>
         <div><span style="background-color: #7d7e52"></span>Staten Island</div>
     </div>
+
     <div id="title-card" class="info-card">
         <h1>NYC Community Food Connection Centers</h1>
         <p>New York City’s Department of Social Services distributes funding to over 700 community kitchens and food
@@ -28,14 +28,15 @@
             distribution sites, these locations are the primary distribution centers for emergency food assistance.</p>
         <p class="cta">Explore CFC centers in your community district</p>
     </div>
-    <div id="sidebar" class="sidebar">
-        <div id="sidebar" class="sidebar">
-            <div id="sidebar-content">
-                <h2>Community Food Centers</h2>
-                <p>Click on a community district to see centers in that area.</p>
+
+    <div id="sidebar" class="sidebar hidden">
+        <button id="close-sidebar" class="close-btn">&times;</button>
+        <div id="sidebar-content">
             </div>
-        </div>
     </div>
+
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.20.0/mapbox-gl.js"></script>
+    <script src="scripts.js"></script>
 </body>
 
 </html>
