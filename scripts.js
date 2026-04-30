@@ -1,20 +1,24 @@
+// Access token for the Mapbox API
 mapboxgl.accessToken = 'pk.eyJ1IjoibWVvMzU3IiwiYSI6ImNtb2hpejkxMDAzamUyb29wdnFsMWU2dHUifQ._R2UlSaxpjRNccsoehAQcA'
 
+// Initialize the Mapbox Map
 const map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/standard',
-    center: [-74.006, 40.7128],
-    zoom: 10
+    container: 'map', // ID of the HTML element
+    style: 'mapbox://styles/mapbox/standard', // Map style URL
+    center: [-74.006, 40.7128], // Starting position [lng, lat] (NYC)
+    zoom: 10 // Initial zoom level
 })
 
+// Global popup instance for center-specific information
 const popup = new mapboxgl.Popup({
     closeButton: false,
     closeOnClick: false
 });
 
+// Variable to store center data after fetching
 let centerData = null;
 
-// 1. Fetch the center data
+// 1. Fetch the center data GeoJSON to be used for filtering in the sidebar
 fetch('./Joined_Center_Building.geojson')
     .then(response => response.json())
     .then(data => {
@@ -22,11 +26,13 @@ fetch('./Joined_Center_Building.geojson')
     });
 
 map.on('load', () => {
+    // Add Community Districts source
     map.addSource('community-districts', {
         type: 'geojson',
         data: './simplified-community-districts.json'
     });
 
+    // Layer: Fill the districts with colors based on the borough ID
     map.addLayer({
         id: 'community-districts-fill',
         type: 'fill',
@@ -34,18 +40,20 @@ map.on('load', () => {
         paint: {
             'fill-color': [
                 'match',
+                // Extracts the first digit of the boro_cd to determine the borough
                 ['slice', ['get', 'boro_cd'], 0, 1],
-                '1', '#8c56e2',
-                '2', '#863e3e',
-                '3', '#73e8c7',
-                '4', '#44aae1',
-                '5', '#7d7e52',
-                '#1e293b'
+                '1', '#8c56e2', // Manhattan
+                '2', '#863e3e', // Bronx
+                '3', '#73e8c7', // Brooklyn
+                '4', '#44aae1', // Queens
+                '5', '#7d7e52', // Staten Island
+                '#1e293b'       // Default color
             ],
             'fill-opacity': 0.3
         }
     });
 
+    // Layer: White highlight border for the currently selected district
     map.addLayer({
         id: 'community-districts-highlight',
         type: 'line',
@@ -58,9 +66,11 @@ map.on('load', () => {
             'line-color': 'white',
             'line-width': 8
         },
+        // Filter out all districts by default
         filter: ['==', ['get', 'boro_cd'], '']
     });
 
+    // Layer: Standard thin border for all districts
     map.addLayer({
         id: 'community-districts-border',
         type: 'line',
@@ -72,11 +82,13 @@ map.on('load', () => {
         }
     });
 
+    // Add source for center polygons (building footprints)
     map.addSource('centers-polygons', {
         type: 'geojson',
         data: 'Joined_Center_Building.geojson'
     });
 
+    // Layer: Visible footprints of the centers
     map.addLayer({
         id: 'centers-fill',
         type: 'fill',
@@ -88,18 +100,13 @@ map.on('load', () => {
     });
 
     // --- HOVER POPUP FOR CENTERS ---
-    const popup = new mapboxgl.Popup({
-        closeButton: false,
-        closeOnClick: false
-    });
-
     map.on('mouseenter', 'centers-fill', (e) => {
         map.getCanvas().style.cursor = 'pointer';
 
         const coordinates = e.lngLat;
         const props = e.features[0].properties;
 
-        // Pull the name and the "sidebar" style address (Address_2)
+        // Display the center name and address in a popup
         const centerName = props.Center || 'Unknown Center';
         const fullAddress = props.Address_2 || 'Address not available';
 
@@ -118,11 +125,13 @@ map.on('load', () => {
         popup.remove();
     });
 
+    // Add source for center point data
     map.addSource('centers-points', {
         type: 'geojson',
         data: 'CFC_ACTIVE_points.geojson'
     });
 
+    // Layer: Small yellow dots representing centers at higher zoom levels
     map.addLayer({
         id: 'centers-layer',
         type: 'circle',
@@ -134,28 +143,27 @@ map.on('load', () => {
     });
 });
 
-// --- THE FIXED CLICK EVENT ---
+// --- DISTRICT CLICK INTERACTIVITY ---
 map.on('click', 'community-districts-fill', (e) => {
     const clickedDistrict = e.features[0].properties.boro_cd;
 
-    // Update the Map Highlight
+    // Apply filter to the highlight layer to show the selected district
     map.setFilter('community-districts-highlight', ['==', ['get', 'boro_cd'], clickedDistrict]);
 
+    // Animate the map focus to the clicked district
     map.flyTo({
         center: e.lngLat,
-        zoom: 12,        // Adjust this number for a tighter or looser zoom
-        essential: true  // This ensures the animation happens even if the user has 'reduced motion' enabled
+        zoom: 12,
+        essential: true 
     });
 
-    // Hide the title card when a district is clicked
+    // Switch UI view: Hide title card, show sidebar
     document.getElementById('title-card').classList.add('hidden');
-
     const sidebar = document.getElementById('sidebar');
     const sidebarContent = document.getElementById('sidebar-content');
-
-    // Show the sidebar
     sidebar.classList.remove('hidden');
 
+    // Filter the centerData to show only centers in the clicked district
     if (centerData) {
         const filteredCenters = centerData.features.filter(feature => {
             return String(feature.properties.CD) === String(clickedDistrict);
@@ -189,25 +197,27 @@ const closeBtn = document.getElementById('close-sidebar');
 
 if (closeBtn) {
     closeBtn.addEventListener('click', (e) => {
-        // 1. Stop the click from "falling through" to the map
+        // Prevents the map click event from firing when the close button is clicked
         e.stopPropagation();
 
-        // 2. Hide the sidebar
         const sidebar = document.getElementById('sidebar');
         sidebar.classList.add('hidden');
-        // Show the title card again
+        
+        // Return UI to original state
         document.getElementById('title-card').classList.remove('hidden');
-        // Zoom back out to the full NYC view
+        
+        // Reset map view
         map.flyTo({
-            center: [-74.006, 40.7128], // Original center
-            zoom: 10,                   // Original zoom
+            center: [-74.006, 40.7128],
+            zoom: 10,
             essential: true
         });
-        // 3. Clear the white map highlight
+
+        // Clear the district highlight
         map.setFilter('community-districts-highlight', ['==', ['get', 'boro_cd'], '']);
     });
 }
 
-// Hover effects
+// Global cursor changes for district fill layer
 map.on('mouseenter', 'community-districts-fill', () => { map.getCanvas().style.cursor = 'pointer'; });
 map.on('mouseleave', 'community-districts-fill', () => { map.getCanvas().style.cursor = ''; });

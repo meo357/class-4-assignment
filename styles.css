@@ -1,9 +1,11 @@
+/* Ensure the application fills the full viewport */
 body, html {
     height: 100%;
     margin: 0;
     padding: 0;
 }
 
+/* Map container occupies the entire screen */
 #map {
     position: absolute;
     top: 0;
@@ -12,43 +14,19 @@ body, html {
     height: 100%;
 }
 
-.legend {
-  background-color: #fff;
-  border-radius: 3px;
-  bottom: 30px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
-  padding: 10px;
-  position: absolute;
-  right: 10px;
-  z-index: 1;
-}
-
-.legend h4 {
-  margin: 0 0 10px;
-}
-
-.legend div span {
-  border-radius: 50%;
-  display: inline-block;
-  height: 10px;
-  margin-right: 5px;
-  width: 10px;
-}
-
-/* Shared styles for both overlays */
+/* Shared styles for "Glassmorphism" effect on overlays */
 .legend, .info-card {
-  /* Lower alpha (0.4) for a ghostly, translucent look */
+  /* Translucent white background */
   background-color: rgba(255, 255, 255, 0.4); 
   
-  /* Increased blur makes the map underneath feel like a dream */
+  /* Backdrop blur creates the "ghostly" frosted glass look */
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   
-  /* A semi-transparent white border gives it a "glass edge" */
+  /* Thin semi-transparent border for definition */
   border: 1px solid rgba(255, 255, 255, 0.2);
   
-  /* Softening the shadow to keep it light and airy */
+  /* Soft, airy shadow for depth */
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
   
   border-radius: 15px;
@@ -56,14 +34,14 @@ body, html {
   z-index: 1;
 }
 
-/* Legend Specifics */
+/* Legend positioning and internal styling */
 .legend {
   bottom: 30px;
   right: 20px;
   padding: 15px;
   position: absolute;
-  z-index: 1;
   min-width: 120px;
+  font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
 }
 
 .legend h4 {
@@ -74,29 +52,38 @@ body, html {
   padding-bottom: 5px;
 }
 
-/* Info Card Specifics */
+/* Circular color markers in the legend */
+.legend div span {
+  border-radius: 50%;
+  display: inline-block;
+  height: 10px;
+  margin-right: 5px;
+  width: 10px;
+}
+
+/* Title Card (Info Card) positioning and visibility transitions */
 .info-card {
   position: absolute;
   top: 20px;
   left: 20px;
-  width: 380px;
+  width: 300px;
   padding: 25px;
-  z-index: 1;
   transition: opacity 0.3s ease, visibility 0.3s;
-    opacity: 1;
-    visibility: visible;
+  opacity: 1;
+  visibility: visible;
 }
 
+/* Utility class to hide the title card when a district is selected */
 .info-card.hidden {
     opacity: 0;
     visibility: hidden;
-    pointer-events: none; /* Prevents users from accidentally clicking an invisible card */
+    pointer-events: none; 
 }
 
 .info-card h1 {
-  font-size: 20px;       /* Smaller size (adjust as needed) */
-    margin-bottom: 8px;    /* Reduces space between header and description */
-    line-height: 1.2;      /* Keeps the text compact if it wraps to two lines */
+  font-size: 20px;
+  margin-bottom: 8px;
+  line-height: 1.2;
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
   color: #000;
 }
@@ -107,34 +94,28 @@ body, html {
   color: #444;
 }
 
+/* Call to Action styling */
 .info-card .cta {
   border-top: 1px solid rgba(0, 0, 0, 0.1);
   padding-top: 15px;
   color: #4b0082; 
   font-weight: 600;
 }
+
+/* Instructional text at the bottom of the card */
 .usage-hints {
     margin-top: 10px;
     padding-top: 10px;
-    border-top: 1px solid rgba(0, 0, 0, 0.05); /* Very faint line to separate from text */
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
     font-size: 12px;
-    color: #666; /* Muted gray so it doesn't distract */
+    color: #666;
     display: flex;
     justify-content: center;
     gap: 8px;
     font-style: italic;
 }
 
-.usage-hints .separator {
-    color: #ccc;
-}
-
-/* Ensure your info-card doesn't get too tall */
-.info-card {
-    max-width: 300px;
-}
-
-/* Sidebar Styling */
+/* Sidebar styling for detailed information */
 .sidebar {
     position: fixed;
     right: 0;
@@ -143,18 +124,19 @@ body, html {
     height: 100%;
     background: white;
     box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+    /* Transition for sliding movement */
     transition: transform 0.3s ease-in-out;
     z-index: 1000;
     padding: 20px;
     overflow-y: auto;
 }
 
-/* Hide the sidebar by sliding it 100% to the right */
+/* Hide sidebar by sliding it off-screen to the right */
 .sidebar.hidden {
     transform: translateX(100%);
 }
 
-/* Close button styling */
+/* Sidebar close button styling */
 .close-btn {
     position: absolute;
     top: 10px;
@@ -162,23 +144,15 @@ body, html {
     background: none;
     border: none;
     font-size: 24px;
-    z-index: 1001;   /* Higher than the sidebar itself */
-    cursor: pointer; /* Makes it clear the button is clickable */
+    cursor: pointer;
     color: #333;
 }
 
 .close-btn:hover {
-    color: #863e3e; /* Matches one of your borough colors */
+    color: #863e3e;
 }
 
-#sidebar h2 {
-    margin-top: 0;
-    font-size: 1.5rem;
-    color: #000;
-    border-bottom: 2px solid #4b0082; /* Lavender accent from your CTA style */
-    padding-bottom: 10px;
-}
-
+/* Individual center entries inside the sidebar */
 .center-entry {
     background: rgba(255, 255, 255, 0.5);
     margin-bottom: 15px;
@@ -187,27 +161,12 @@ body, html {
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.center-entry h3 {
-    margin: 0 0 8px 0;
-    font-size: 1.1rem;
-    color: #074580; /* Blue from your border style */
-}
-
-.center-entry p {
-    margin: 4px 0;
-    font-size: 0.9rem;
-    line-height: 1.4;
-    color: #444;
-}
-
-.center-entry strong {
-    color: #000;
-}
-
+/* Mapbox Popup custom styles */
 .mapboxgl-popup-content {
     padding: 10px;
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif;
-    pointer-events: none; /* This prevents the popup from flickering if the mouse hits it */
+    /* Prevents the popup from stealing mouse hover and flickering */
+    pointer-events: none; 
 }
